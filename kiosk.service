@@ -1,0 +1,7 @@
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root
+ExecStart=/usr/bin/startx /root/kiosk.sh
+Restart=always
+TimeoutStartSec=0

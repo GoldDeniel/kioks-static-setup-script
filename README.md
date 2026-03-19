@@ -3,7 +3,7 @@ On a simple, clean and minimal distro (this one is debian based) just simply ins
 ```
 sudo apt install --no-install-recommends xserver-xorg x11-xserver-utils xinit openbox chromium curl
 ```
-Use the script included in the files - **change TARGET_URL**:
+Use the script included in the files (_/root/kiosk.sh_) - **change TARGET_URL**:
 ```
 #!/bin/bash
 

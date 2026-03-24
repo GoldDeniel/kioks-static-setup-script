@@ -4,11 +4,9 @@ source /opt/kiosk/kiosk.conf
 
 read_target_source() {
   [ -f "$SOURCE_FILE" ] || return 1
-
   local source_line
   source_line=$(sed -n '/[^[:space:]]/{p;q;}' "$SOURCE_FILE" 2>/dev/null)
   source_line=${source_line%%$'\r'}
-
   [ -n "$source_line" ] || return 1
   printf '%s' "$source_line"
 }
@@ -25,20 +23,6 @@ target_available() {
     clean_path=${target#file://}
     [ -f "$clean_path" ]
   fi
-}
-
-focus_and_navigate_chromium() {
-  local target="$1"
-  local win_id
-
-  win_id=$(xdotool search --onlyvisible --class chromium 2>/dev/null | head -n1)
-  [ -n "$win_id" ] || return 1
-
-  xdotool windowactivate --sync "$win_id"
-  xdotool key --window "$win_id" ctrl+l
-  xdotool type --delay 1 --window "$win_id" -- "$target"
-  xdotool key --window "$win_id" Return
-  return 0
 }
 
 TARGET_URL=$(read_target_source)
@@ -94,10 +78,9 @@ SOURCE_POLL_INTERVAL="${SOURCE_POLL_INTERVAL:-3}"
     [ "$NEW_TARGET" = "$CURRENT_TARGET" ] && continue
 
     if target_available "$NEW_TARGET"; then
-      if focus_and_navigate_chromium "$NEW_TARGET"; then
-        CURRENT_TARGET="$NEW_TARGET"
-        echo "Switched target to: $CURRENT_TARGET"
-      fi
+      echo "Detected source change to reachable target: $NEW_TARGET"
+      kill "$CHROMIUM_PID" 2>/dev/null || true
+      exit 0
     fi
   done
 ) &

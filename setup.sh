@@ -126,3 +126,6 @@ systemctl restart kiosk.service
 
 echo "Setup complete. Share name: kiosk-site"
 echo "Edit source from: $SITE_DIR/source-001.txt"
+
+read -p "Press Enter to reboot the system..." </dev/tty
+reboot

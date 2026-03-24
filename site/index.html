@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kiosk Ready</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #0f172a;
+        --card: #111827;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --ok: #22c55e;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 20% 20%, #1d4ed8, var(--bg));
+        font-family: "DejaVu Sans", sans-serif;
+        color: var(--text);
+      }
+      .card {
+        background: rgba(17, 24, 39, 0.9);
+        border: 1px solid rgba(229, 231, 235, 0.15);
+        border-radius: 14px;
+        padding: 2rem;
+        width: min(90vw, 680px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      }
+      h1 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-size: clamp(1.6rem, 3vw, 2.3rem);
+      }
+      p {
+        margin: 0.6rem 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+      .status {
+        color: var(--ok);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+      code {
+        color: #93c5fd;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="card">
+      <h1>Kiosk Setup Complete</h1>
+      <p class="status">System online</p>
+      <p>Set your source in <code>/opt/kiosk/site/source-001.txt</code>.</p>
+      <p>Example URL: <code>https://example.com</code></p>
+      <p>Example file: <code>file:///opt/kiosk/site/index.html</code></p>
+    </section>
+  </body>
+</html>

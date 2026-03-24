@@ -1,14 +1,15 @@
 [Unit]
-Description=Raspberry Pi Kiosk Launcher
-After=network.target
+Description=Kiosk Launcher Service
+After=network-online.target
+Wants=network-online.target
 # This line tells the system to stop the login prompt on tty1
 Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/root
-ExecStart=/root/launcher.sh
+WorkingDirectory=/opt/kiosk
+ExecStart=/opt/kiosk/launcher.sh
 Restart=always
 
 # Force the script to own the physical screen
@@ -17,8 +18,8 @@ StandardOutput=tty
 StandardError=tty
 TTYPath=/dev/tty1
 # These ensure the screen is cleared and ready for your message
-ExecStartPre=/usr/bin/tput civis
-ExecStopPost=/usr/bin/tput cnorm
+ExecStartPre=-/usr/bin/tput civis
+ExecStopPost=-/usr/bin/tput cnorm
 
 [Install]
 WantedBy=multi-user.target

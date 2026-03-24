@@ -1,0 +1,1 @@
+file:///opt/kiosk/site/index.html

@@ -1,20 +1,41 @@
 #!/bin/bash
 
 # 1. Load the config
-source /root/kiosk.conf
+source /opt/kiosk/kiosk.conf
 
-CHECK_INTERVAL=2
+read_target_source() {
+  [ -f "$SOURCE_FILE" ] || return 1
+
+  local source_line
+  source_line=$(sed -n '/[^[:space:]]/{p;q;}' "$SOURCE_FILE" 2>/dev/null)
+  source_line=${source_line%%$'\r'}
+
+  [ -n "$source_line" ] || return 1
+  printf '%s' "$source_line"
+}
+
+CHECK_INTERVAL=${CHECK_INTERVAL:-2}
 
 clear
-tput civis # Hide cursor
+[ -t 1 ] && tput civis # Hide cursor
 
 echo "  [ LOADING SYSTEM ]"
 echo "  ------------------"
 
 while true; do
+  TARGET_URL=$(read_target_source)
+
+  if [ -z "$TARGET_URL" ]; then
+    printf "\r  [ STATUS ]: Waiting for source file: %s...   " "$SOURCE_FILE"
+    sleep "$CHECK_INTERVAL"
+    continue
+  fi
+
   # --- CHECK IF IT IS A WEBSITE ---
-  if [[ "$TARGET_URL" == http* ]]; then
-    if curl -sL --head --request GET "$TARGET_URL" | grep "200 OK" > /dev/null; then
+  if [[ "$TARGET_URL" == http://* || "$TARGET_URL" == https://* ]]; then
+    HTTP_CODE=$(curl -sL -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$TARGET_URL" 2>/dev/null || true)
+
+    if [[ "$HTTP_CODE" =~ ^[23][0-9][0-9]$ ]]; then
       echo "  [ STATUS ]: Website Reachable! Launching..."
       break
     else
@@ -37,5 +58,5 @@ while true; do
   sleep $CHECK_INTERVAL
 done
 
-tput cnorm # Show cursor again
-/usr/bin/startx /root/kiosk.sh
+[ -t 1 ] && tput cnorm # Show cursor again
+/usr/bin/startx /opt/kiosk/kiosk.sh

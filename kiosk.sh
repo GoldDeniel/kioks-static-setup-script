@@ -1,7 +1,25 @@
 #!/bin/bash
 
 # 1. LOAD CONFIG
-source /root/kiosk.conf
+source /opt/kiosk/kiosk.conf
+
+read_target_source() {
+  [ -f "$SOURCE_FILE" ] || return 1
+
+  local source_line
+  source_line=$(sed -n '/[^[:space:]]/{p;q;}' "$SOURCE_FILE" 2>/dev/null)
+  source_line=${source_line%%$'\r'}
+
+  [ -n "$source_line" ] || return 1
+  printf '%s' "$source_line"
+}
+
+TARGET_URL=$(read_target_source)
+
+if [ -z "$TARGET_URL" ]; then
+  echo "No target source found in $SOURCE_FILE"
+  exit 1
+fi
 
 export DISPLAY=:0
 
@@ -28,7 +46,7 @@ sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /root/.config/chromium/De
 
 # 6. Launch Chromium using the variable from the config file
 chromium --no-sandbox \
-         --user-data-dir=/root/chrome-temp \
+         --user-data-dir=/opt/kiosk/chrome-temp \
          --noerrdialogs \
          --disable-infobars \
          --kiosk \
